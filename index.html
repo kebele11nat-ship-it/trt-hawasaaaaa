@@ -22,14 +22,14 @@
 
     * { box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 24px; color: var(--text-main); }
-    .container { max-width: 1440px; margin: 0 auto; }
+    .container { max-width: 1200px; margin: 0 auto; }
     
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: var(--primary); color: white; padding: 18px 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15); }
+    header { display: flex; justify-space-between; align-items: center; margin-bottom: 24px; background: var(--primary); color: white; padding: 18px 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15); }
     header h1 { margin: 0; font-size: 1.4rem; letter-spacing: 0.5px; font-weight: 700; }
     #status-indicator { background: rgba(255, 255, 255, 0.15); padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 500; }
 
-    .grid { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
-    @media (max-width: 1024px) { .grid { grid-template-columns: 1fr; } }
+    .grid { display: grid; grid-template-columns: 340px 1fr; gap: 24px; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
     
     .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 24px; }
     .card h3 { margin-top: 0; font-size: 1.05rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 16px; }
@@ -48,27 +48,25 @@
     .btn-bay-in { background: linear-gradient(135deg, #d97706, #b45309); }
     .btn-bay-out { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
     .btn-gate-out { background: linear-gradient(135deg, #0f172a, #1e293b); }
-    .btn-edit { background: #64748b; padding: 5px 10px; font-size: 0.75rem; border-radius: 6px; }
+    .btn-edit { background: #64748b; padding: 6px 14px; font-size: 0.78rem; border-radius: 6px; }
     .btn-save { background: #16a34a; width: 100%; margin-top: 12px; padding: 12px; }
 
     .table-container { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 0.83rem; white-space: nowrap; }
+    th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 0.9rem; white-space: nowrap; }
     th { background: #f8fafc; color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.5px; }
 
-    /* Dwell Time Badges */
+    /* Dwell Time Badges (Color-Coded: <=3hrs Green, >3hrs Red) */
     .time-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; display: inline-block; }
     .time-normal { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
     .time-exceeded { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
-
-    .shipment-tag { padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; background: #f1f5f9; color: var(--primary); font-weight: 600; }
 
     .kpi-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
     .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
     .kpi-value { font-size: 1.8rem; font-weight: 800; color: var(--accent); margin-top: 4px; }
 
     .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 1000; }
-    .modal { background: white; border-radius: 12px; padding: 24px; width: 420px; max-width: 90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); max-height: 90vh; overflow-y: auto; }
+    .modal { background: white; border-radius: 12px; padding: 24px; width: 440px; max-width: 90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); max-height: 90vh; overflow-y: auto; }
   </style>
 </head>
 <body>
@@ -80,12 +78,12 @@
     </header>
 
     <div class="grid">
-      <!-- Control Panel -->
+      <!-- Terminal Control Panel -->
       <div>
         <div class="card">
           <h3>Terminal Control</h3>
           <div class="form-group">
-            <label>Truck / License Plate *</label>
+            <label>Truck Plate Number *</label>
             <input type="text" id="truckId" placeholder="e.g., KAA-123X" required>
           </div>
           <div class="form-group">
@@ -139,53 +137,41 @@
         </div>
       </div>
 
-      <!-- Active Yard Tracking Split Tables -->
+      <!-- Active Yard Tracking -->
       <div>
-        <!-- Table 1: Parking Area -->
+        <!-- Table 1: Waiting for Bay (Gate IN logged, Bay IN missing) -->
         <div class="card">
-          <h3>🅿️ Parking Area (Waiting for Bay)</h3>
+          <h3>🅿️ Waiting for Bay (Parking Area)</h3>
           <div class="table-container">
             <table>
               <thead>
                 <tr>
-                  <th>Truck ID</th>
-                  <th>Type</th>
-                  <th>SO Num</th>
-                  <th>Agent</th>
-                  <th>OC Name</th>
-                  <th>Parking Time</th>
-                  <th>Total Dwell</th>
-                  <th>Delay Cause</th>
-                  <th>Action</th>
+                  <th>Truck Plate Number</th>
+                  <th>Dwell Time</th>
+                  <th style="text-align: right;">Action</th>
                 </tr>
               </thead>
               <tbody id="parking-table-body">
-                <tr><td colspan="9" style="text-align:center; color:var(--text-muted);">Loading parking data...</td></tr>
+                <tr><td colspan="3" style="text-align:center; color:var(--text-muted);">Loading parking data...</td></tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- Table 2: Loading/Unloading Bays -->
+        <!-- Table 2: At Bay (Bay IN logged, pending Gate OUT) -->
         <div class="card">
-          <h3>🏭 Loading / Unloading Bays (At Bay)</h3>
+          <h3>🏭 At Bay (Loading / Unloading)</h3>
           <div class="table-container">
             <table>
               <thead>
                 <tr>
-                  <th>Truck ID</th>
-                  <th>Type</th>
-                  <th>SO Num</th>
-                  <th>Agent</th>
-                  <th>OC Name</th>
-                  <th>Loading Time</th>
-                  <th>Total Dwell</th>
-                  <th>Delay Cause</th>
-                  <th>Action</th>
+                  <th>Truck Plate Number</th>
+                  <th>Dwell Time</th>
+                  <th style="text-align: right;">Action</th>
                 </tr>
               </thead>
               <tbody id="bay-table-body">
-                <tr><td colspan="9" style="text-align:center; color:var(--text-muted);">Loading bay data...</td></tr>
+                <tr><td colspan="3" style="text-align:center; color:var(--text-muted);">Loading bay data...</td></tr>
               </tbody>
             </table>
           </div>
@@ -213,7 +199,7 @@
   <!-- Inline Edit Modal -->
   <div class="modal-overlay" id="editModal">
     <div class="modal">
-      <h3 style="margin-top:0;" id="modalTitle">Edit Log Entry</h3>
+      <h3 style="margin-top:0;" id="modalTitle">Edit Truck Record</h3>
       <input type="hidden" id="editTruckId">
       
       <div class="form-group">
@@ -253,6 +239,10 @@
           <label>Bay Out Time</label>
           <input type="datetime-local" id="editBayOut">
         </div>
+        <div class="form-group">
+          <label>Gate Out Time</label>
+          <input type="datetime-local" id="editGateOut">
+        </div>
       </div>
 
       <div class="form-group">
@@ -268,7 +258,7 @@
         </select>
       </div>
 
-      <button class="btn-save" onclick="saveLogEdit()">Save Log Changes</button>
+      <button class="btn-save" onclick="saveLogEdit()">Save Changes</button>
       <button style="background:#e2e8f0; color:#334155; margin-top:8px; width:100%; border:none; padding:10px; border-radius:8px; font-weight:600; cursor:pointer;" onclick="closeEditModal()">Cancel</button>
     </div>
   </div>
@@ -309,37 +299,35 @@
       let bayCount = 0;
 
       data.activeTrucks.forEach((t, index) => {
-        // Calculate minutes to evaluate > 3 hours (180 minutes) threshold
+        // Evaluate threshold (> 180 mins / 3 hrs = red badge, else green badge)
         const mins = parseInt(t.totalDwell) || 0;
         const colorClass = mins > 180 ? 'time-exceeded' : 'time-normal';
         const dwellBadge = `<span class="time-badge ${colorClass}">${t.totalDwell}</span>`;
 
         const rowHtml = `<tr>
-          <td><strong>${t.truckId}</strong></td>
-          <td><span class="shipment-tag">${t.shipmentType}</span></td>
-          <td>${t.soNumber || '-'}</td>
-          <td>${t.agent || '-'}</td>
-          <td>${t.ocName || '-'}</td>
-          ${t.stage === 'WAITING_FOR_BAY' ? `<td>${t.parkingTime}</td>` : `<td>${t.loadingTime}</td>`}
+          <td><strong style="font-size:0.95rem; color:var(--primary);">${t.truckId}</strong></td>
           <td>${dwellBadge}</td>
-          <td style="color:var(--danger); font-weight:600;">${t.delayReason || '-'}</td>
-          <td><button class="btn-edit" onclick="openEditModal(${index})">Edit</button></td>
+          <td style="text-align: right;"><button class="btn-edit" onclick="openEditModal(${index})">Edit</button></td>
         </tr>`;
 
-        if (t.stage === 'WAITING_FOR_BAY') {
-          parkingTbody.innerHTML += rowHtml;
-          parkingCount++;
-        } else {
+        // Logic check: Gate In recorded but no Bay In -> Waiting for Bay
+        // Bay In recorded and no Gate Out -> At Bay
+        const isAtBay = t.bayInRaw || t.stage === 'AT_BAY';
+
+        if (isAtBay) {
           bayTbody.innerHTML += rowHtml;
           bayCount++;
+        } else {
+          parkingTbody.innerHTML += rowHtml;
+          parkingCount++;
         }
       });
 
       if (parkingCount === 0) {
-        parkingTbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--text-muted);">No trucks currently in parking area</td></tr>';
+        parkingTbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:16px;">No trucks currently waiting for bay</td></tr>';
       }
       if (bayCount === 0) {
-        bayTbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--text-muted);">No trucks currently at loading bays</td></tr>';
+        bayTbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:16px;">No trucks currently at loading bays</td></tr>';
       }
 
       document.getElementById('status-indicator').innerText = 'Ready';
@@ -347,7 +335,7 @@
 
     function openEditModal(index) {
       const truck = currentYardData[index];
-      document.getElementById('modalTitle').innerText = `Edit Log: ${truck.truckId}`;
+      document.getElementById('modalTitle').innerText = `Edit Truck: ${truck.truckId}`;
       document.getElementById('editTruckId').value = truck.truckId;
       document.getElementById('editShipmentType').value = truck.shipmentType || 'Crate';
       document.getElementById('editSoNumber').value = truck.soNumber || '';
@@ -357,6 +345,7 @@
       document.getElementById('editGateIn').value = truck.gateInRaw || '';
       document.getElementById('editBayIn').value = truck.bayInRaw || '';
       document.getElementById('editBayOut').value = truck.bayOutRaw || '';
+      document.getElementById('editGateOut').value = truck.gateOutRaw || '';
       document.getElementById('editDelayReason').value = truck.delayReason || '';
 
       document.getElementById('editModal').style.display = 'flex';
@@ -378,6 +367,7 @@
         gateIn: document.getElementById('editGateIn').value,
         bayIn: document.getElementById('editBayIn').value,
         bayOut: document.getElementById('editBayOut').value,
+        gateOut: document.getElementById('editGateOut').value,
         delayReason: document.getElementById('editDelayReason').value
       };
 
@@ -414,7 +404,7 @@
         customTimestamp: document.getElementById('customTimestamp').value
       };
 
-      if (!payload.truckId) return alert('Please enter the Truck ID');
+      if (!payload.truckId) return alert('Please enter the Truck Plate Number');
 
       document.getElementById('status-indicator').innerText = 'Processing...';
 
