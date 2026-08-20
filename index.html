@@ -100,10 +100,21 @@
             <label>Agent Name</label>
             <input type="text" id="agentName" placeholder="Broker / Freight Agent">
           </div>
+          
+          <!-- UPDATED OC NAME DROPDOWN -->
           <div class="form-group">
             <label>Ops Controller (OC)</label>
-            <input type="text" id="ocName" placeholder="Controller Name">
+            <select id="ocName">
+              <option value="">-- Select Controller --</option>
+              <option value="Misgana">Misgana</option>
+              <option value="Habtamu">Habtamu</option>
+              <option value="Tilahun">Tilahun</option>
+              <option value="Desalegn">Desalegn</option>
+              <option value="Emshaw">Emshaw</option>
+              <option value="Mihret">Mihret</option>
+            </select>
           </div>
+
           <div class="form-group">
             <label>Driver Name</label>
             <input type="text" id="driverName" placeholder="Driver name">
@@ -266,7 +277,6 @@
       const delayCounts = {};
 
       data.activeTrucks.forEach((t, index) => {
-        // Exclude trucks that have completed Gate OUT
         if (t.gateOutRaw && t.gateOutRaw.trim() !== '') return;
 
         const mins = parseInt(t.totalDwell) || 0;
@@ -390,7 +400,7 @@
         shipmentType: document.getElementById('shipmentType').value,
         soNumber: document.getElementById('soNumber').value.trim(),
         agentName: document.getElementById('agentName').value.trim(),
-        ocName: document.getElementById('ocName').value.trim(),
+        ocName: document.getElementById('ocName').value,
         driverName: document.getElementById('driverName').value.trim(),
         delayReason: document.getElementById('delayReason').value,
         customTimestamp: document.getElementById('customTimestamp').value
