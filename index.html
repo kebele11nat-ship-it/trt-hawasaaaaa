@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TRT - Haw</title>
+  <title>TRT - Haw Operational Terminal</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -29,7 +29,7 @@
     .btn-refresh { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 0.82rem; cursor: pointer; }
     .btn-refresh:hover { background: var(--accent-hover); }
 
-    .grid { display: grid; grid-template-columns: 340px 1fr; gap: 24px; }
+    .grid { display: grid; grid-template-columns: 360px 1fr; gap: 24px; }
     @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
     
     .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 24px; }
@@ -39,6 +39,10 @@
     label { display: block; font-size: 0.78rem; font-weight: 600; margin-bottom: 4px; color: var(--text-muted); text-transform: uppercase; }
     input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.88rem; background: #fafafa; }
     
+    .input-with-btn { display: flex; gap: 6px; }
+    .btn-now { background: #0284c7; color: white; border: none; border-radius: 6px; padding: 0 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .btn-now:hover { background: #0369a1; }
+
     .timestamp-box { background: #f8fafc; border: 1px dashed var(--accent); padding: 12px; border-radius: 8px; margin: 16px 0; }
 
     .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
@@ -62,14 +66,14 @@
     .chart-container { position: relative; height: 260px; width: 100%; display: flex; justify-content: center; }
 
     .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 1000; }
-    .modal { background: white; border-radius: 12px; padding: 24px; width: 440px; max-width: 90%; max-height: 90vh; overflow-y: auto; }
+    .modal { background: white; border-radius: 12px; padding: 24px; width: 460px; max-width: 92%; max-height: 90vh; overflow-y: auto; }
   </style>
 </head>
 <body>
 
   <div class="container">
     <header>
-      <h1>TRT - Haw</h1>
+      <h1>TRT - Haw Terminal</h1>
       <div class="header-controls">
         <button class="btn-refresh" onclick="fetchDashboard()">🔄 Refresh</button>
         <span id="status-indicator">Ready</span>
@@ -100,8 +104,6 @@
             <label>Agent Name</label>
             <input type="text" id="agentName" placeholder="Broker / Freight Agent">
           </div>
-          
-          <!-- UPDATED OC NAME DROPDOWN -->
           <div class="form-group">
             <label>Ops Controller (OC)</label>
             <select id="ocName">
@@ -114,7 +116,6 @@
               <option value="Mihret">Mihret</option>
             </select>
           </div>
-
           <div class="form-group">
             <label>Driver Name</label>
             <input type="text" id="driverName" placeholder="Driver name">
@@ -134,7 +135,10 @@
 
           <div class="timestamp-box">
             <label style="color: var(--accent);">Custom Timestamp (Optional)</label>
-            <input type="datetime-local" id="customTimestamp">
+            <div class="input-with-btn">
+              <input type="datetime-local" id="customTimestamp">
+              <button class="btn-now" type="button" onclick="setNow('customTimestamp')">Set Now</button>
+            </div>
           </div>
           
           <div class="btn-grid">
@@ -146,7 +150,7 @@
         </div>
       </div>
 
-      <!-- Active Tables & Analytics -->
+      <!-- Tables & Visuals -->
       <div>
         <div class="card">
           <h3>🅿️ Waiting for Bay (Parking Area)</h3>
@@ -207,19 +211,31 @@
       <div style="background:#f8fafc; padding:12px; border:1px solid var(--border); border-radius:8px; margin: 12px 0;">
         <div class="form-group">
           <label>Gate In Time</label>
-          <input type="datetime-local" id="editGateIn">
+          <div class="input-with-btn">
+            <input type="datetime-local" id="editGateIn">
+            <button class="btn-now" type="button" onclick="setNow('editGateIn')">Set Now</button>
+          </div>
         </div>
         <div class="form-group">
           <label>Bay In Time</label>
-          <input type="datetime-local" id="editBayIn">
+          <div class="input-with-btn">
+            <input type="datetime-local" id="editBayIn">
+            <button class="btn-now" type="button" onclick="setNow('editBayIn')">Set Now</button>
+          </div>
         </div>
         <div class="form-group">
           <label>Bay Out Time</label>
-          <input type="datetime-local" id="editBayOut">
+          <div class="input-with-btn">
+            <input type="datetime-local" id="editBayOut">
+            <button class="btn-now" type="button" onclick="setNow('editBayOut')">Set Now</button>
+          </div>
         </div>
         <div class="form-group">
           <label>Gate Out Time</label>
-          <input type="datetime-local" id="editGateOut">
+          <div class="input-with-btn">
+            <input type="datetime-local" id="editGateOut">
+            <button class="btn-now" type="button" onclick="setNow('editGateOut')">Set Now</button>
+          </div>
         </div>
       </div>
 
@@ -250,6 +266,12 @@
       fetchDashboard();
       setInterval(fetchDashboard, 20000);
     };
+
+    function setNow(elementId) {
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      document.getElementById(elementId).value = now.toISOString().slice(0,16);
+    }
 
     function fetchDashboard() {
       document.getElementById('status-indicator').innerText = 'Syncing...';
