@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TRT - Haw Operational Terminal</title>
+  <title>TRT - Haw Terminal</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -21,13 +21,19 @@
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 24px; color: var(--text-main); }
     .container { max-width: 1200px; margin: 0 auto; }
     
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: var(--primary); color: white; padding: 18px 24px; border-radius: 12px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--primary); color: white; padding: 18px 24px; border-radius: 12px; }
     header h1 { margin: 0; font-size: 1.4rem; font-weight: 700; }
     .header-controls { display: flex; align-items: center; gap: 12px; }
     #status-indicator { background: rgba(255, 255, 255, 0.15); padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; }
     
     .btn-refresh { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 0.82rem; cursor: pointer; }
     .btn-refresh:hover { background: var(--accent-hover); }
+
+    /* KPI METRICS BORDERED CARDS */
+    .kpi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .kpi-title { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .kpi-value { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-top: 4px; }
 
     .grid { display: grid; grid-template-columns: 360px 1fr; gap: 24px; }
     @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
@@ -40,19 +46,18 @@
     input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.88rem; background: #fafafa; }
     
     .input-with-btn { display: flex; gap: 6px; }
-    .btn-now { background: #0284c7; color: white; border: none; border-radius: 6px; padding: 0 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .btn-now { background: #0284c7; color: white; border: none; border-radius: 6px; padding: 0 12px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
     .btn-now:hover { background: #0369a1; }
 
     .timestamp-box { background: #f8fafc; border: 1px dashed var(--accent); padding: 12px; border-radius: 8px; margin: 16px 0; }
 
     .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-    button { padding: 11px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; font-size: 0.85rem; }
+    button.btn-action { padding: 11px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; font-size: 0.85rem; }
     .btn-gate-in { background: #2563eb; }
     .btn-bay-in { background: #d97706; }
     .btn-bay-out { background: #7c3aed; }
     .btn-gate-out { background: #0f172a; }
-    .btn-edit { background: #64748b; padding: 6px 14px; font-size: 0.78rem; border-radius: 6px; }
-    .btn-save { background: #16a34a; width: 100%; margin-top: 12px; padding: 12px; }
+    .btn-select { background: #64748b; color: white; border: none; padding: 6px 12px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; }
 
     .table-container { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
@@ -64,9 +69,6 @@
     .time-exceeded { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
     .chart-container { position: relative; height: 260px; width: 100%; display: flex; justify-content: center; }
-
-    .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 1000; }
-    .modal { background: white; border-radius: 12px; padding: 24px; width: 460px; max-width: 92%; max-height: 90vh; overflow-y: auto; }
   </style>
 </head>
 <body>
@@ -80,15 +82,35 @@
       </div>
     </header>
 
+    <!-- KPI SUMMARY METRICS -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div>
+          <div class="kpi-title">Sum of Trucks Per Day</div>
+          <div class="kpi-value" id="kpi-trucks-today">0</div>
+        </div>
+        <div style="font-size: 2rem;">🚚</div>
+      </div>
+      <div class="kpi-card">
+        <div>
+          <div class="kpi-title">Average TRT (Turnaround Time)</div>
+          <div class="kpi-value" id="kpi-avg-trt">0 <span style="font-size:1rem; font-weight:600;">mins</span></div>
+        </div>
+        <div style="font-size: 2rem;">⏱️</div>
+      </div>
+    </div>
+
     <div class="grid">
-      <!-- Controls -->
+      <!-- Terminal Control Form -->
       <div>
         <div class="card">
           <h3>Terminal Control</h3>
+          
           <div class="form-group">
             <label>Truck Plate Number *</label>
             <input type="text" id="truckId" placeholder="e.g., KAA-123X" required>
           </div>
+
           <div class="form-group">
             <label>Shipment Type *</label>
             <select id="shipmentType">
@@ -96,14 +118,17 @@
               <option value="Keg">Keg</option>
             </select>
           </div>
+
           <div class="form-group">
             <label>Sales Order (SO Num)</label>
             <input type="text" id="soNumber" placeholder="e.g., SO-99412">
           </div>
+
           <div class="form-group">
             <label>Agent Name</label>
             <input type="text" id="agentName" placeholder="Broker / Freight Agent">
           </div>
+
           <div class="form-group">
             <label>Ops Controller (OC)</label>
             <select id="ocName">
@@ -116,10 +141,12 @@
               <option value="Mihret">Mihret</option>
             </select>
           </div>
+
           <div class="form-group">
             <label>Driver Name</label>
             <input type="text" id="driverName" placeholder="Driver name">
           </div>
+
           <div class="form-group">
             <label>Delay Cause (If Any)</label>
             <select id="delayReason">
@@ -134,7 +161,7 @@
           </div>
 
           <div class="timestamp-box">
-            <label style="color: var(--accent);">Custom Timestamp (Optional)</label>
+            <label style="color: var(--accent);">Timestamp Log</label>
             <div class="input-with-btn">
               <input type="datetime-local" id="customTimestamp">
               <button class="btn-now" type="button" onclick="setNow('customTimestamp')">Set Now</button>
@@ -142,15 +169,15 @@
           </div>
           
           <div class="btn-grid">
-            <button class="btn-gate-in" onclick="submitAction('GATE_IN')">1. Gate IN</button>
-            <button class="btn-bay-in" onclick="submitAction('BAY_IN')">2. Bay IN</button>
-            <button class="btn-bay-out" onclick="submitAction('BAY_OUT')">3. Bay OUT</button>
-            <button class="btn-gate-out" onclick="submitAction('GATE_OUT')">4. Gate OUT</button>
+            <button class="btn-action btn-gate-in" onclick="submitAction('GATE_IN')">1. Gate IN</button>
+            <button class="btn-action btn-bay-in" onclick="submitAction('BAY_IN')">2. Bay IN</button>
+            <button class="btn-action btn-bay-out" onclick="submitAction('BAY_OUT')">3. Bay OUT</button>
+            <button class="btn-action btn-gate-out" onclick="submitAction('GATE_OUT')">4. Gate OUT</button>
           </div>
         </div>
       </div>
 
-      <!-- Tables & Visuals -->
+      <!-- Live Active Yard Data -->
       <div>
         <div class="card">
           <h3>🅿️ Waiting for Bay (Parking Area)</h3>
@@ -158,9 +185,10 @@
             <table>
               <thead>
                 <tr>
-                  <th>Truck Plate Number</th>
+                  <th>Truck Plate</th>
+                  <th>OC Name</th>
                   <th>Dwell Time</th>
-                  <th style="text-align: right;">Action</th>
+                  <th style="text-align: right;">Select</th>
                 </tr>
               </thead>
               <tbody id="parking-table-body"></tbody>
@@ -174,9 +202,10 @@
             <table>
               <thead>
                 <tr>
-                  <th>Truck Plate Number</th>
+                  <th>Truck Plate</th>
+                  <th>OC Name</th>
                   <th>Dwell Time</th>
-                  <th style="text-align: right;">Action</th>
+                  <th style="text-align: right;">Select</th>
                 </tr>
               </thead>
               <tbody id="bay-table-body"></tbody>
@@ -194,69 +223,6 @@
     </div>
   </div>
 
-  <!-- Inline Edit Modal -->
-  <div class="modal-overlay" id="editModal">
-    <div class="modal">
-      <h3 style="margin-top:0;" id="modalTitle">Edit Truck Record</h3>
-      <input type="hidden" id="editTruckId">
-      
-      <div class="form-group">
-        <label>Shipment Type</label>
-        <select id="editShipmentType">
-          <option value="Crate">Crate</option>
-          <option value="Keg">Keg</option>
-        </select>
-      </div>
-
-      <div style="background:#f8fafc; padding:12px; border:1px solid var(--border); border-radius:8px; margin: 12px 0;">
-        <div class="form-group">
-          <label>Gate In Time</label>
-          <div class="input-with-btn">
-            <input type="datetime-local" id="editGateIn">
-            <button class="btn-now" type="button" onclick="setNow('editGateIn')">Set Now</button>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Bay In Time</label>
-          <div class="input-with-btn">
-            <input type="datetime-local" id="editBayIn">
-            <button class="btn-now" type="button" onclick="setNow('editBayIn')">Set Now</button>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Bay Out Time</label>
-          <div class="input-with-btn">
-            <input type="datetime-local" id="editBayOut">
-            <button class="btn-now" type="button" onclick="setNow('editBayOut')">Set Now</button>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Gate Out Time</label>
-          <div class="input-with-btn">
-            <input type="datetime-local" id="editGateOut">
-            <button class="btn-now" type="button" onclick="setNow('editGateOut')">Set Now</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Delay Cause</label>
-        <select id="editDelayReason">
-          <option value="">-- Select Delay Reason --</option>
-          <option value="Doc Clearance Issue">Doc Clearance Issue</option>
-          <option value="Bay Congestion">Bay Congestion</option>
-          <option value="Unloading Equipment Down">Unloading Equipment Down</option>
-          <option value="Driver Missing">Driver Missing</option>
-          <option value="Customs Hold">Customs Hold</option>
-          <option value="Other Operations Delay">Other Operations Delay</option>
-        </select>
-      </div>
-
-      <button class="btn-save" onclick="saveLogEdit()">Save Changes</button>
-      <button style="background:#e2e8f0; color:#334155; margin-top:8px; width:100%; border:none; padding:10px; border-radius:8px; font-weight:600; cursor:pointer;" onclick="closeEditModal()">Cancel</button>
-    </div>
-  </div>
-
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOKsFmjMuMn5WolYzOn6CoZPDfOV_l2yTw_BedTY-MWacLfynCdNM376Lb11dv6NOZ/exec';
     let currentYardData = [];
@@ -270,7 +236,7 @@
     function setNow(elementId) {
       const now = new Date();
       now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-      document.getElementById(elementId).value = now.toISOString().slice(0,16);
+      document.getElementById(elementId).value = now.toISOString().slice(0, 16);
     }
 
     function fetchDashboard() {
@@ -285,7 +251,15 @@
     }
 
     function renderDashboard(data) {
-      if (!data || !data.activeTrucks) return;
+      if (!data) return;
+      
+      // Update Summary KPI Indicators
+      if (data.summary) {
+        document.getElementById('kpi-trucks-today').innerText = data.summary.trucksToday || 0;
+        document.getElementById('kpi-avg-trt').innerHTML = `${data.summary.avgTrtMins || 0} <span style="font-size:1rem; font-weight:600;">mins</span>`;
+      }
+
+      if (!data.activeTrucks) return;
       currentYardData = data.activeTrucks;
 
       const parkingTbody = document.getElementById('parking-table-body');
@@ -307,8 +281,9 @@
 
         const rowHtml = `<tr>
           <td><strong style="font-size:0.95rem; color:var(--primary);">${t.truckId}</strong></td>
+          <td>${t.ocName || '-'}</td>
           <td>${dwellBadge}</td>
-          <td style="text-align: right;"><button class="btn-edit" onclick="openEditModal(${index})">Edit</button></td>
+          <td style="text-align: right;"><button class="btn-select" onclick="selectTruck(${index})">Select</button></td>
         </tr>`;
 
         const isAtBay = (t.bayInRaw && t.bayInRaw.trim() !== '') || t.stage === 'AT_BAY';
@@ -328,14 +303,25 @@
       });
 
       if (parkingCount === 0) {
-        parkingTbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:16px;">No trucks waiting for bay</td></tr>';
+        parkingTbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:16px;">No trucks waiting for bay</td></tr>';
       }
       if (bayCount === 0) {
-        bayTbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:16px;">No trucks currently at loading bays</td></tr>';
+        bayTbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:16px;">No trucks currently at loading bays</td></tr>';
       }
 
       renderDelayChart(delayCounts);
       document.getElementById('status-indicator').innerText = 'Ready';
+    }
+
+    function selectTruck(index) {
+      const truck = currentYardData[index];
+      document.getElementById('truckId').value = truck.truckId || '';
+      document.getElementById('shipmentType').value = truck.shipmentType || 'Crate';
+      document.getElementById('soNumber').value = truck.soNumber || '';
+      document.getElementById('agentName').value = truck.agentName || '';
+      document.getElementById('ocName').value = truck.ocName || '';
+      document.getElementById('driverName').value = truck.driverName || '';
+      document.getElementById('delayReason').value = truck.delayReason || '';
     }
 
     function renderDelayChart(delayCounts) {
@@ -368,52 +354,6 @@
       });
     }
 
-    function openEditModal(index) {
-      const truck = currentYardData[index];
-      document.getElementById('modalTitle').innerText = `Edit Truck: ${truck.truckId}`;
-      document.getElementById('editTruckId').value = truck.truckId;
-      document.getElementById('editShipmentType').value = truck.shipmentType || 'Crate';
-      document.getElementById('editGateIn').value = truck.gateInRaw || '';
-      document.getElementById('editBayIn').value = truck.bayInRaw || '';
-      document.getElementById('editBayOut').value = truck.bayOutRaw || '';
-      document.getElementById('editGateOut').value = truck.gateOutRaw || '';
-      document.getElementById('editDelayReason').value = truck.delayReason || '';
-
-      document.getElementById('editModal').style.display = 'flex';
-    }
-
-    function closeEditModal() {
-      document.getElementById('editModal').style.display = 'none';
-    }
-
-    function saveLogEdit() {
-      const payload = {
-        requestType: 'updateTruckDetails',
-        truckId: document.getElementById('editTruckId').value,
-        shipmentType: document.getElementById('editShipmentType').value,
-        gateIn: document.getElementById('editGateIn').value,
-        bayIn: document.getElementById('editBayIn').value,
-        bayOut: document.getElementById('editBayOut').value,
-        gateOut: document.getElementById('editGateOut').value,
-        delayReason: document.getElementById('editDelayReason').value
-      };
-
-      document.getElementById('status-indicator').innerText = 'Updating...';
-      closeEditModal();
-
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
-      .then(res => {
-        alert(res.message);
-        fetchDashboard();
-      })
-      .catch(err => console.error('Error:', err));
-    }
-
     function submitAction(actionType) {
       const payload = {
         requestType: 'updateTruckStage',
@@ -428,7 +368,7 @@
         customTimestamp: document.getElementById('customTimestamp').value
       };
 
-      if (!payload.truckId) return alert('Please enter the Truck Plate Number');
+      if (!payload.truckId) return alert('Please enter or select a Truck Plate Number');
 
       document.getElementById('status-indicator').innerText = 'Processing...';
 
@@ -441,6 +381,7 @@
       .then(res => {
         alert(res.message);
         document.getElementById('truckId').value = '';
+        document.getElementById('customTimestamp').value = '';
         fetchDashboard();
       })
       .catch(err => console.error('Error:', err));
