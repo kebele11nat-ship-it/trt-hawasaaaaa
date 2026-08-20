@@ -151,12 +151,17 @@
             <label>Delay Cause (If Any)</label>
             <select id="delayReason">
               <option value="">-- Select Delay Reason --</option>
-              <option value="Doc Clearance Issue">Doc Clearance Issue</option>
-              <option value="Bay Congestion">Bay Congestion</option>
-              <option value="Unloading Equipment Down">Unloading Equipment Down</option>
-              <option value="Driver Missing">Driver Missing</option>
-              <option value="Customs Hold">Customs Hold</option>
-              <option value="Other Operations Delay">Other Operations Delay</option>
+              <option value="product shortage">product shortage</option>
+              <option value="truck shortage">truck shortage</option>
+              <option value="bay congestion">bay congestion</option>
+              <option value="loading capacity">loading capacity</option>
+              <option value="forklift breakdown">forklift breakdown</option>
+              <option value="manpower shortage">manpower shortage</option>
+              <option value="weather condition">weather condition</option>
+              <option value="fgs gate key">fgs gate key</option>
+              <option value="documentation">documentation</option>
+              <option value="pallet shortage">pallet shortage</option>
+              <option value="erp malfunction">erp malfunction</option>
             </select>
           </div>
 
@@ -342,7 +347,7 @@
           labels: labels,
           datasets: [{
             data: dataValues,
-            backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#10b981', '#64748b'],
+            backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#10b981', '#64748b', '#ec4899', '#14b8a6', '#f97316', '#06b6d4', '#84cc16'],
             borderWidth: 1
           }]
         },
