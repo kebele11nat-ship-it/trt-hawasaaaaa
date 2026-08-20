@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TRT - Haw</title>
-  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -318,6 +317,9 @@
       const delayCounts = {};
 
       data.activeTrucks.forEach((t, index) => {
+        // Skip rendering if a Gate Out timestamp exists
+        if (t.gateOutRaw && t.gateOutRaw.trim() !== '') return;
+
         const mins = parseInt(t.totalDwell) || 0;
         const colorClass = mins > 180 ? 'time-exceeded' : 'time-normal';
         const dwellBadge = `<span class="time-badge ${colorClass}">${t.totalDwell}</span>`;
