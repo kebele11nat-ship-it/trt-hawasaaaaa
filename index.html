@@ -12,67 +12,57 @@
       --primary: #0f172a;
       --accent: #2563eb;
       --accent-hover: #1d4ed8;
-      --warning: #d97706;
-      --purple: #7c3aed;
       --border: #e2e8f0;
       --text-main: #0f172a;
       --text-muted: #64748b;
-      --danger: #ef4444;
-      --success: #22c55e;
     }
 
     * { box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 24px; color: var(--text-main); }
     .container { max-width: 1200px; margin: 0 auto; }
     
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: var(--primary); color: white; padding: 18px 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15); }
-    header h1 { margin: 0; font-size: 1.4rem; letter-spacing: 0.5px; font-weight: 700; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: var(--primary); color: white; padding: 18px 24px; border-radius: 12px; }
+    header h1 { margin: 0; font-size: 1.4rem; font-weight: 700; }
     .header-controls { display: flex; align-items: center; gap: 12px; }
-    #status-indicator { background: rgba(255, 255, 255, 0.15); padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 500; }
+    #status-indicator { background: rgba(255, 255, 255, 0.15); padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; }
     
-    .btn-refresh { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: background 0.2s; }
+    .btn-refresh { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 0.82rem; cursor: pointer; }
     .btn-refresh:hover { background: var(--accent-hover); }
 
     .grid { display: grid; grid-template-columns: 340px 1fr; gap: 24px; }
     @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
     
     .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 24px; }
-    .card h3 { margin-top: 0; font-size: 1.05rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 16px; }
+    .card h3 { margin-top: 0; font-size: 1.05rem; font-weight: 700; color: var(--primary); border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 16px; }
 
     .form-group { margin-bottom: 12px; }
-    label { display: block; font-size: 0.78rem; font-weight: 600; margin-bottom: 4px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.88rem; background: #fafafa; transition: all 0.2s; }
-    input:focus, select:focus { outline: none; border-color: var(--accent); background: white; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    label { display: block; font-size: 0.78rem; font-weight: 600; margin-bottom: 4px; color: var(--text-muted); text-transform: uppercase; }
+    input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.88rem; background: #fafafa; }
     
     .timestamp-box { background: #f8fafc; border: 1px dashed var(--accent); padding: 12px; border-radius: 8px; margin: 16px 0; }
 
     .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-    button { padding: 11px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; font-size: 0.85rem; transition: transform 0.1s, opacity 0.2s; }
-    button:active { transform: scale(0.98); }
-    .btn-gate-in { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
-    .btn-bay-in { background: linear-gradient(135deg, #d97706, #b45309); }
-    .btn-bay-out { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
-    .btn-gate-out { background: linear-gradient(135deg, #0f172a, #1e293b); }
+    button { padding: 11px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; font-size: 0.85rem; }
+    .btn-gate-in { background: #2563eb; }
+    .btn-bay-in { background: #d97706; }
+    .btn-bay-out { background: #7c3aed; }
+    .btn-gate-out { background: #0f172a; }
     .btn-edit { background: #64748b; padding: 6px 14px; font-size: 0.78rem; border-radius: 6px; }
     .btn-save { background: #16a34a; width: 100%; margin-top: 12px; padding: 12px; }
 
     .table-container { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 0.9rem; white-space: nowrap; }
-    th { background: #f8fafc; color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.5px; }
+    th { background: #f8fafc; color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.72rem; }
 
     .time-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; display: inline-block; }
     .time-normal { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
     .time-exceeded { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
-    .kpi-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
-    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-    .kpi-value { font-size: 1.8rem; font-weight: 800; color: var(--accent); margin-top: 4px; }
-
     .chart-container { position: relative; height: 260px; width: 100%; display: flex; justify-content: center; }
 
     .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 1000; }
-    .modal { background: white; border-radius: 12px; padding: 24px; width: 440px; max-width: 90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); max-height: 90vh; overflow-y: auto; }
+    .modal { background: white; border-radius: 12px; padding: 24px; width: 440px; max-width: 90%; max-height: 90vh; overflow-y: auto; }
   </style>
 </head>
 <body>
@@ -87,7 +77,6 @@
     </header>
 
     <div class="grid">
-      <!-- Terminal Control Panel -->
       <div>
         <div class="card">
           <h3>Terminal Control</h3>
@@ -134,7 +123,6 @@
           <div class="timestamp-box">
             <label style="color: var(--accent);">Custom Timestamp (Optional)</label>
             <input type="datetime-local" id="customTimestamp">
-            <span style="font-size:0.7rem; color:var(--text-muted); display:block; margin-top:4px;">Blank = Use current date/time</span>
           </div>
           
           <div class="btn-grid">
@@ -146,7 +134,6 @@
         </div>
       </div>
 
-      <!-- Active Yard Tracking & Analytics -->
       <div>
         <div class="card">
           <h3>🅿️ Waiting for Bay (Parking Area)</h3>
@@ -159,9 +146,7 @@
                   <th style="text-align: right;">Action</th>
                 </tr>
               </thead>
-              <tbody id="parking-table-body">
-                <tr><td colspan="3" style="text-align:center; color:var(--text-muted);">Loading parking data...</td></tr>
-              </tbody>
+              <tbody id="parking-table-body"></tbody>
             </table>
           </div>
         </div>
@@ -177,14 +162,11 @@
                   <th style="text-align: right;">Action</th>
                 </tr>
               </thead>
-              <tbody id="bay-table-body">
-                <tr><td colspan="3" style="text-align:center; color:var(--text-muted);">Loading bay data...</td></tr>
-              </tbody>
+              <tbody id="bay-table-body"></tbody>
             </table>
           </div>
         </div>
 
-        <!-- Delay Reason Pie Chart -->
         <div class="card">
           <h3>📊 Delay Reason Contribution</h3>
           <div class="chart-container">
@@ -193,25 +175,8 @@
         </div>
       </div>
     </div>
-
-    <!-- KPIs -->
-    <div class="kpi-bar">
-      <div class="kpi-card">
-        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight:700;">DAILY AVG TRT</div>
-        <div class="kpi-value" id="kpi-daily">--</div>
-      </div>
-      <div class="kpi-card">
-        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight:700;">WEEKLY AVG TRT</div>
-        <div class="kpi-value" id="kpi-weekly">--</div>
-      </div>
-      <div class="kpi-card">
-        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight:700;">MONTHLY AVG TRT</div>
-        <div class="kpi-value" id="kpi-monthly">--</div>
-      </div>
-    </div>
   </div>
 
-  <!-- Inline Edit Modal -->
   <div class="modal-overlay" id="editModal">
     <div class="modal">
       <h3 style="margin-top:0;" id="modalTitle">Edit Truck Record</h3>
@@ -223,22 +188,6 @@
           <option value="Crate">Crate</option>
           <option value="Keg">Keg</option>
         </select>
-      </div>
-      <div class="form-group">
-        <label>SO Number</label>
-        <input type="text" id="editSoNumber">
-      </div>
-      <div class="form-group">
-        <label>Agent Name</label>
-        <input type="text" id="editAgentName">
-      </div>
-      <div class="form-group">
-        <label>OC Name</label>
-        <input type="text" id="editOcName">
-      </div>
-      <div class="form-group">
-        <label>Driver Name</label>
-        <input type="text" id="editDriverName">
       </div>
 
       <div style="background:#f8fafc; padding:12px; border:1px solid var(--border); border-radius:8px; margin: 12px 0;">
@@ -294,7 +243,7 @@
         .then(response => response.json())
         .then(data => renderDashboard(data))
         .catch(err => {
-          console.error('Error fetching dashboard:', err);
+          console.error('Error:', err);
           document.getElementById('status-indicator').innerText = 'Fetch Error';
         });
     }
@@ -302,9 +251,6 @@
     function renderDashboard(data) {
       if (!data || !data.activeTrucks) return;
       currentYardData = data.activeTrucks;
-      document.getElementById('kpi-daily').innerText = data.kpis.daily;
-      document.getElementById('kpi-weekly').innerText = data.kpis.weekly;
-      document.getElementById('kpi-monthly').innerText = data.kpis.monthly;
 
       const parkingTbody = document.getElementById('parking-table-body');
       const bayTbody = document.getElementById('bay-table-body');
@@ -317,7 +263,7 @@
       const delayCounts = {};
 
       data.activeTrucks.forEach((t, index) => {
-        // Skip rendering if a Gate Out timestamp exists
+        // STRICT FILTER: Skip completed/gate-out trucks entirely
         if (t.gateOutRaw && t.gateOutRaw.trim() !== '') return;
 
         const mins = parseInt(t.totalDwell) || 0;
@@ -330,7 +276,7 @@
           <td style="text-align: right;"><button class="btn-edit" onclick="openEditModal(${index})">Edit</button></td>
         </tr>`;
 
-        const isAtBay = t.bayInRaw || t.stage === 'AT_BAY';
+        const isAtBay = (t.bayInRaw && t.bayInRaw.trim() !== '') || t.stage === 'AT_BAY';
 
         if (isAtBay) {
           bayTbody.innerHTML += rowHtml;
@@ -340,7 +286,6 @@
           parkingCount++;
         }
 
-        // Aggregate Delay Causes for Chart
         if (t.delayReason && t.delayReason.trim() !== '') {
           const reason = t.delayReason.trim();
           delayCounts[reason] = (delayCounts[reason] || 0) + 1;
@@ -348,7 +293,7 @@
       });
 
       if (parkingCount === 0) {
-        parkingTbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:16px;">No trucks currently waiting for bay</td></tr>';
+        parkingTbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:16px;">No trucks waiting for bay</td></tr>';
       }
       if (bayCount === 0) {
         bayTbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:16px;">No trucks currently at loading bays</td></tr>';
@@ -363,12 +308,10 @@
       const dataValues = Object.values(delayCounts);
       const ctx = document.getElementById('delayChart').getContext('2d');
 
-      if (delayChartInstance) {
-        delayChartInstance.destroy();
-      }
+      if (delayChartInstance) delayChartInstance.destroy();
 
       if (labels.length === 0) {
-        labels.push('No Delays Reported');
+        labels.push('No Delays');
         dataValues.push(1);
       }
 
@@ -378,26 +321,14 @@
           labels: labels,
           datasets: [{
             data: dataValues,
-            backgroundColor: [
-              '#ef4444',
-              '#f59e0b',
-              '#3b82f6',
-              '#8b5cf6',
-              '#10b981',
-              '#64748b'
-            ],
+            backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#10b981', '#64748b'],
             borderWidth: 1
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: { boxWidth: 12, font: { size: 11 } }
-            }
-          }
+          plugins: { legend: { position: 'bottom' } }
         }
       });
     }
@@ -407,10 +338,6 @@
       document.getElementById('modalTitle').innerText = `Edit Truck: ${truck.truckId}`;
       document.getElementById('editTruckId').value = truck.truckId;
       document.getElementById('editShipmentType').value = truck.shipmentType || 'Crate';
-      document.getElementById('editSoNumber').value = truck.soNumber || '';
-      document.getElementById('editAgentName').value = truck.agent || '';
-      document.getElementById('editOcName').value = truck.ocName || '';
-      document.getElementById('editDriverName').value = truck.driver || '';
       document.getElementById('editGateIn').value = truck.gateInRaw || '';
       document.getElementById('editBayIn').value = truck.bayInRaw || '';
       document.getElementById('editBayOut').value = truck.bayOutRaw || '';
@@ -429,15 +356,10 @@
         requestType: 'updateTruckDetails',
         truckId: document.getElementById('editTruckId').value,
         shipmentType: document.getElementById('editShipmentType').value,
-        soNumber: document.getElementById('editSoNumber').value.trim(),
-        agentName: document.getElementById('editAgentName').value.trim(),
-        ocName: document.getElementById('editOcName').value.trim(),
-        driverName: document.getElementById('editDriverName').value.trim(),
         gateIn: document.getElementById('editGateIn').value,
         bayIn: document.getElementById('editBayIn').value,
         bayOut: document.getElementById('editBayOut').value,
         gateOut: document.getElementById('editGateOut').value,
-        gateOutTime: document.getElementById('editGateOut').value,
         delayReason: document.getElementById('editDelayReason').value
       };
 
@@ -454,10 +376,7 @@
         alert(res.message);
         fetchDashboard();
       })
-      .catch(err => {
-        console.error('Error:', err);
-        setTimeout(fetchDashboard, 1000);
-      });
+      .catch(err => console.error('Error:', err));
     }
 
     function submitAction(actionType) {
@@ -466,10 +385,6 @@
         action: actionType,
         truckId: document.getElementById('truckId').value.trim(),
         shipmentType: document.getElementById('shipmentType').value,
-        soNumber: document.getElementById('soNumber').value.trim(),
-        agentName: document.getElementById('agentName').value.trim(),
-        ocName: document.getElementById('ocName').value.trim(),
-        driverName: document.getElementById('driverName').value.trim(),
         delayReason: document.getElementById('delayReason').value,
         customTimestamp: document.getElementById('customTimestamp').value
       };
@@ -486,23 +401,10 @@
       .then(res => res.json())
       .then(res => {
         alert(res.message);
-        resetForm();
+        document.getElementById('truckId').value = '';
         fetchDashboard();
       })
-      .catch(err => {
-        console.error('Error:', err);
-        setTimeout(fetchDashboard, 1000);
-      });
-    }
-
-    function resetForm() {
-      document.getElementById('truckId').value = '';
-      document.getElementById('soNumber').value = '';
-      document.getElementById('agentName').value = '';
-      document.getElementById('ocName').value = '';
-      document.getElementById('driverName').value = '';
-      document.getElementById('delayReason').value = '';
-      document.getElementById('customTimestamp').value = '';
+      .catch(err => console.error('Error:', err));
     }
   </script>
 </body>
