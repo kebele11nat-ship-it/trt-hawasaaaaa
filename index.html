@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRT Terminal & Yard Operations</title>
+  <style>
+    :root {
+      --primary: #0f172a;
+      --accent: #2563eb;
+      --warning: #d97706;
+      --purple: #7c3aed;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #cbd5e1;
+    }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
+    .container { max-width: 1380px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: 320px 1fr; gap: 20px; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    
+    .form-group { margin-bottom: 10px; }
+    label { display: block; font-size: 0.78rem; font-weight: 600; margin-bottom: 3px; color: #475569; }
+    input, select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 5px; box-sizing: border-box; font-size: 0.88rem; }
+    
+    .timestamp-box { background: #f1f5f9; border: 1px dashed var(--accent); padding: 10px; border-radius: 6px; margin-top: 12px; margin-bottom: 12px; }
+
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    button { padding: 10px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; color: white; font-size: 0.85rem; }
+    .btn-gate-in { background: var(--accent); }
+    .btn-bay-in { background: var(--warning); }
+    .btn-bay-out { background: var(--purple); }
+    .btn-gate-out { background: var(--primary); }
+    .btn-edit { background: #475569; padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; }
+    .btn-save { background: #16a34a; margin-top: 10px; width: 100%; }
+
+    .table-container { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 0.82rem; white-space: nowrap; }
+    th { background: #f1f5f9; color: #334155; font-weight: 700; }
+
+    .badge { padding: 3px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: bold; }
+    .status-queue { background: #fef3c7; color: #92400e; }
+    .status-bay { background: #e0e7ff; color: #3730a3; }
+    .status-exit { background: #d1fae5; color: #065f46; }
+
+    .shipment-tag { padding: 2px 6px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.75rem; background: #f8fafc; font-weight: 600; }
+
+    .kpi-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: center; }
+    .kpi-value { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+
+    /* Modal Overlay Styles */
+    .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.5); justify-content: center; align-items: center; z-index: 1000; }
+    .modal { background: white; border-radius: 8px; padding: 20px; width: 400px; max-width: 90%; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h2 style="margin:0;">TRT Terminal & Yard Operations</h2>
+      <span id="status-indicator" style="font-size: 0.85rem; color: #64748b;">Ready</span>
+    </header>
+
+    <div class="grid">
+      <!-- Terminal Entry Control Panel -->
+      <div class="card">
+        <h3 style="margin-top:0; font-size:1rem;">Terminal Entry Panel</h3>
+        <div class="form-group">
+          <label>Truck / License Plate ID *</label>
+          <input type="text" id="truckId" placeholder="e.g., KAA-123X" required>
+        </div>
+        <div class="form-group">
+          <label>Shipment Type *</label>
+          <select id="shipmentType">
+            <option value="Crate">Crate</option>
+            <option value="Keg">Keg</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>SO Number (Sales Order)</label>
+          <input type="text" id="soNumber" placeholder="e.g., SO-99412">
+        </div>
+        <div class="form-group">
+          <label>Agent Name</label>
+          <input type="text" id="agentName" placeholder="Broker / Freight Agent">
+        </div>
+        <div class="form-group">
+          <label>OC Name (Ops Controller)</label>
+          <input type="text" id="ocName" placeholder="Controller Name">
+        </div>
+        <div class="form-group">
+          <label>Driver Name</label>
+          <input type="text" id="driverName" placeholder="Driver name">
+        </div>
+        <div class="form-group">
+          <label>Delay Reason (If applicable)</label>
+          <select id="delayReason">
+            <option value="">-- Select Delay Cause --</option>
+            <option value="Doc Clearance Issue">Doc Clearance Issue</option>
+            <option value="Bay Congestion">Bay Congestion</option>
+            <option value="Unloading Equipment Down">Unloading Equipment Down</option>
+            <option value="Driver Missing">Driver Missing</option>
+            <option value="Customs Hold">Customs Hold</option>
+            <option value="Other Operations Delay">Other Operations Delay</option>
+          </select>
+        </div>
+
+        <!-- Action Time Input Box -->
+        <div class="timestamp-box">
+          <label style="color: var(--accent);">Custom Action Time (Optional)</label>
+          <input type="datetime-local" id="customTimestamp">
+          <span style="font-size:0.7rem; color:#64748b; display:block; margin-top:3px;">Leave blank to use current time</span>
+        </div>
+        
+        <div class="btn-grid">
+          <button class="btn-gate-in" onclick="submitAction('GATE_IN')">1. Gate IN</button>
+          <button class="btn-bay-in" onclick="submitAction('BAY_IN')">2. Bay IN</button>
+          <button class="btn-bay-out" onclick="submitAction('BAY_OUT')">3. Bay OUT</button>
+          <button class="btn-gate-out" onclick="submitAction('GATE_OUT')">4. Gate OUT</button>
+        </div>
+      </div>
+
+      <!-- Active Yard Tracking Table -->
+      <div class="card">
+        <h3 style="margin-top:0; font-size:1rem;">Active Yard Tracking Table (In-Yard Trucks)</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Truck ID</th>
+                <th>Shipment Type</th>
+                <th>SO Num</th>
+                <th>Agent</th>
+                <th>OC Name</th>
+                <th>Stage</th>
+                <th>Parking Time</th>
+                <th>Loading/Unloading Time</th>
+                <th>Total TRT</th>
+                <th>Delay Cause</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="truck-table-body">
+              <tr><td colspan="11" style="text-align:center;">Loading active yard data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Display Bar -->
+    <div class="kpi-bar">
+      <div class="kpi-card">
+        <div style="font-size: 0.75rem; color: #64748b; font-weight:bold;">DAILY AVG TRT</div>
+        <div class="kpi-value" id="kpi-daily">--</div>
+      </div>
+      <div class="kpi-card">
+        <div style="font-size: 0.75rem; color: #64748b; font-weight:bold;">WEEKLY AVG TRT</div>
+        <div class="kpi-value" id="kpi-weekly">--</div>
+      </div>
+      <div class="kpi-card">
+        <div style="font-size: 0.75rem; color: #64748b; font-weight:bold;">MONTHLY AVG TRT</div>
+        <div class="kpi-value" id="kpi-monthly">--</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inline Edit Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <h3 style="margin-top:0; font-size:1rem;" id="modalTitle">Edit Truck Log & Timestamps</h3>
+      <input type="hidden" id="editTruckId">
+      
+      <div class="form-group">
+        <label>Shipment Type</label>
+        <select id="editShipmentType">
+          <option value="Crate">Crate</option>
+          <option value="Keg">Keg</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>SO Number</label>
+        <input type="text" id="editSoNumber">
+      </div>
+      <div class="form-group">
+        <label>Agent Name</label>
+        <input type="text" id="editAgentName">
+      </div>
+      <div class="form-group">
+        <label>OC Name</label>
+        <input type="text" id="editOcName">
+      </div>
+      <div class="form-group">
+        <label>Driver Name</label>
+        <input type="text" id="editDriverName">
+      </div>
+
+      <!-- Timestamps Editing Section -->
+      <div style="background:#f8fafc; padding:10px; border:1px solid var(--border); border-radius:6px; margin: 10px 0;">
+        <div class="form-group">
+          <label>Gate In Time</label>
+          <input type="datetime-local" id="editGateIn">
+        </div>
+        <div class="form-group">
+          <label>Bay In Time</label>
+          <input type="datetime-local" id="editBayIn">
+        </div>
+        <div class="form-group">
+          <label>Bay Out Time</label>
+          <input type="datetime-local" id="editBayOut">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Delay Reason</label>
+        <select id="editDelayReason">
+          <option value="">-- Select Delay Cause --</option>
+          <option value="Doc Clearance Issue">Doc Clearance Issue</option>
+          <option value="Bay Congestion">Bay Congestion</option>
+          <option value="Unloading Equipment Down">Unloading Equipment Down</option>
+          <option value="Driver Missing">Driver Missing</option>
+          <option value="Customs Hold">Customs Hold</option>
+          <option value="Other Operations Delay">Other Operations Delay</option>
+        </select>
+      </div>
+
+      <button class="btn-save" onclick="saveLogEdit()">Save Log Changes</button>
+      <button style="background:#cbd5e1; color:#334155; margin-top:5px; width:100%;" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOKsFmjMuMn5WolYzOn6CoZPDfOV_l2yTw_BedTY-MWacLfynCdNM376Lb11dv6NOZ/exec';
+    let currentYardData = [];
+
+    window.onload = function() {
+      fetchDashboard();
+      setInterval(fetchDashboard, 20000);
+    };
+
+    function fetchDashboard() {
+      fetch(SCRIPT_URL + '?action=getDashboardData')
+        .then(response => response.json())
+        .then(data => renderDashboard(data))
+        .catch(err => console.error('Error fetching dashboard:', err));
+    }
+
+    function renderDashboard(data) {
+      if (!data || !data.activeTrucks) return;
+      currentYardData = data.activeTrucks;
+      document.getElementById('kpi-daily').innerText = data.kpis.daily;
+      document.getElementById('kpi-weekly').innerText = data.kpis.weekly;
+      document.getElementById('kpi-monthly').innerText = data.kpis.monthly;
+
+      const tbody = document.getElementById('truck-table-body');
+      tbody.innerHTML = '';
+
+      if (data.activeTrucks.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; color:#94a3b8;">No active trucks in yard</td></tr>';
+        return;
+      }
+
+      data.activeTrucks.forEach((t, index) => {
+        let stageBadge = '';
+        if(t.stage === 'WAITING_FOR_BAY') stageBadge = '<span class="badge status-queue">Parking</span>';
+        else if(t.stage === 'AT_BAY') stageBadge = '<span class="badge status-bay">At Bay</span>';
+        else if(t.stage === 'WAITING_TO_EXIT') stageBadge = '<span class="badge status-exit">Ready Exit</span>';
+
+        tbody.innerHTML += `<tr>
+          <td><strong>${t.truckId}</strong></td>
+          <td><span class="shipment-tag">${t.shipmentType}</span></td>
+          <td>${t.soNumber || '-'}</td>
+          <td>${t.agent || '-'}</td>
+          <td>${t.ocName || '-'}</td>
+          <td>${stageBadge}</td>
+          <td>${t.parkingTime}</td>
+          <td>${t.loadingTime}</td>
+          <td><strong>${t.totalDwell}</strong></td>
+          <td style="color:#e11d48;">${t.delayReason || '-'}</td>
+          <td><button class="btn-edit" onclick="openEditModal(${index})">Edit</button></td>
+        </tr>`;
+      });
+    }
+
+    function openEditModal(index) {
+      const truck = currentYardData[index];
+      document.getElementById('modalTitle').innerText = `Edit Active Log: ${truck.truckId}`;
+      document.getElementById('editTruckId').value = truck.truckId;
+      document.getElementById('editShipmentType').value = truck.shipmentType || 'Crate';
+      document.getElementById('editSoNumber').value = truck.soNumber || '';
+      document.getElementById('editAgentName').value = truck.agent || '';
+      document.getElementById('editOcName').value = truck.ocName || '';
+      document.getElementById('editDriverName').value = truck.driver || '';
+      document.getElementById('editGateIn').value = truck.gateInRaw || '';
+      document.getElementById('editBayIn').value = truck.bayInRaw || '';
+      document.getElementById('editBayOut').value = truck.bayOutRaw || '';
+      document.getElementById('editDelayReason').value = truck.delayReason || '';
+
+      document.getElementById('editModal').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    function saveLogEdit() {
+      const payload = {
+        requestType: 'updateTruckDetails',
+        truckId: document.getElementById('editTruckId').value,
+        shipmentType: document.getElementById('editShipmentType').value,
+        soNumber: document.getElementById('editSoNumber').value.trim(),
+        agentName: document.getElementById('editAgentName').value.trim(),
+        ocName: document.getElementById('editOcName').value.trim(),
+        driverName: document.getElementById('editDriverName').value.trim(),
+        gateIn: document.getElementById('editGateIn').value,
+        bayIn: document.getElementById('editBayIn').value,
+        bayOut: document.getElementById('editBayOut').value,
+        delayReason: document.getElementById('editDelayReason').value
+      };
+
+      document.getElementById('status-indicator').innerText = 'Updating record...';
+      closeEditModal();
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        alert('Update request sent.');
+        setTimeout(fetchDashboard, 1500);
+        document.getElementById('status-indicator').innerText = 'Ready';
+      })
+      .catch(err => {
+        alert('Error updating log: ' + err);
+        document.getElementById('status-indicator').innerText = 'Error';
+      });
+    }
+
+    function submitAction(actionType) {
+      const payload = {
+        requestType: 'updateTruckStage',
+        action: actionType,
+        truckId: document.getElementById('truckId').value.trim(),
+        shipmentType: document.getElementById('shipmentType').value,
+        soNumber: document.getElementById('soNumber').value.trim(),
+        agentName: document.getElementById('agentName').value.trim(),
+        ocName: document.getElementById('ocName').value.trim(),
+        driverName: document.getElementById('driverName').value.trim(),
+        delayReason: document.getElementById('delayReason').value,
+        customTimestamp: document.getElementById('customTimestamp').value,
+        targetTrt: 120
+      };
+
+      if (!payload.truckId) return alert('Please input at least the Truck ID');
+
+      document.getElementById('status-indicator').innerText = 'Processing...';
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        alert('Action submitted successfully!');
+        resetForm();
+        setTimeout(fetchDashboard, 1500);
+        document.getElementById('status-indicator').innerText = 'Ready';
+      })
+      .catch(err => {
+        alert('Error submitting action: ' + err);
+        document.getElementById('status-indicator').innerText = 'Error';
+      });
+    }
+
+    function resetForm() {
+      document.getElementById('truckId').value = '';
+      document.getElementById('soNumber').value = '';
+      document.getElementById('agentName').value = '';
+      document.getElementById('ocName').value = '';
+      document.getElementById('driverName').value = '';
+      document.getElementById('delayReason').value = '';
+      document.getElementById('customTimestamp').value = '';
+    }
+  </script>
+</body>
+</html>
